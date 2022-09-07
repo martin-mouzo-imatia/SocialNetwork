@@ -1,8 +1,10 @@
 import com.github.javafaker.Faker;
 import lombok.extern.java.Log;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Scanner;
 
 @Log
@@ -10,6 +12,8 @@ public class Main {
 
     private static final Faker faker = new Faker();
     private static final ArrayList<User> users = new ArrayList<>();
+
+    private static final  Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
 
@@ -23,7 +27,6 @@ public class Main {
 
         do {
             try {
-                Scanner sc = new Scanner(System.in);
                 System.out.println("\n");
                 System.out.println("*** Log in ***\n");
                 System.out.print("1.) Log in. \n");
@@ -45,7 +48,7 @@ public class Main {
                         break;
 
                     case 2:
-                        System.out.println("Nombre de usuario: \n");
+                        System.out.println("username: \n");
                         addUser();
 
                     case 3:
@@ -53,10 +56,10 @@ public class Main {
                         System.exit(0);
 
                     default:
-                        log.info(choise + " non é unha opción de menú válida! Seleccione outro.");
+                        log.info(choise + " not a valid menu option! Please select another.");
                 }
             } catch (Exception e) {
-                log.warning("A opción debe ser un número");
+                log.warning("The option must be a number");
             }
 
         } while (choise != 4);
@@ -71,21 +74,97 @@ public class Main {
         int followersCount = loginUser.getFollowers().size();
         int postCount = loginUser.getPublications().size();
         System.out.println("-----------------------------------" + username.toUpperCase() + "[:)]" + "---------------------------------------------------\n");
-        System.out.println("Seguidores: " + followersCount + "\t" + "Publicacións: " + postCount);
+        System.out.println("Followers: " + followersCount + "\t" + "Publication: " + postCount);
 
-        showActions();
+        showActions(loginUser);
     }
 
-    private static void showActions() {
+    private static void showActions(User loginUser) {
+
+        int choice = 0;
+        do {
+            try {
+
+                System.out.println("///////////////////////////////////"
+                        + "\n1: Show followers"
+                        + "\n2: See posts"
+                        + "\n3: Publish post   "
+                        + "\n4: See Comments         "
+                        + "\n5: Search user          "
+                        + "\n6: Profile     "
+                        + "\n[logout]            "
+                        + "\n//////////////////////////////////");
+
+                System.out.println("Opción: \n");
+                choice = sc.nextInt();
+
+
+                switch (choice) {
+
+                    case 1:
+                        showFollowers(loginUser);
+                        break;
+                    case 2:
+                        showPost(loginUser);
+                        break;
+                    case 3:
+                        addPost(loginUser);
+                        break;
+                    case 4:
+                        break;
+                    case 5:
+                        break;
+                    case 6:
+                        break;
+                }
+
+            } catch (Exception e) {
+                log.warning("The option must be a number");
+            }
+        } while (choice != 7);
+
+
+    }
+
+    private static void addPost(User loginUser) {
+        System.out.println("¿Qué clase de post vai a publicar?\n");
         System.out.println("///////////////////////////////////"
-                + "\n1: Show followers"
-                + "\n2: See posts"
-                + "\n3: Publish post   "
-                + "\n4: See Comments         "
-                + "\n5: Search user          "
-                + "\n6: Profile     "
-                + "\n[logout]            "
-                + "\n//////////////////////////////////");
+                + "\n1: Imagen"
+                + "\n2: Texto"
+                + "\n3: Vídeo   ");
+
+        int choice = sc.nextInt();
+       switch (choice){
+           case 1:
+               String title= "Aleatorio";
+               String  dimentions="50*50";
+
+              Post post = new ImgPost("", Date.from(Instant.now()), "");
+                //add a lista
+               break;
+           case 2:
+
+               break;
+           case 3:
+
+               break;
+       }
+
+
+    }
+
+    private static void showFollowers(User loginUser) {
+        if (!loginUser.getFollowers().isEmpty()) {
+            loginUser.getFollowers().stream().forEach(System.out::println);
+        }
+        log.info("You have no followers");
+    }
+
+    private static void showPost(User loginUser) {
+        if (!loginUser.getPublications().isEmpty()) {
+            loginUser.getPublications().stream().forEach(System.out::println);
+        }
+        log.info("You haven't posted anything yet");
     }
 
     private static void addUser() {
@@ -93,7 +172,7 @@ public class Main {
         User user = new User(username, Collections.emptyList(), Collections.emptyList());
 
         if (verifyUser(username)) {
-            log.info("Este username xa existe");
+            log.info("This username already exists");
         } else {
             users.add(user);
             users.forEach(System.out::println);
