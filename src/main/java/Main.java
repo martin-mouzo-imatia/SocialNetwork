@@ -11,12 +11,8 @@ public class Main {
     private static final Faker faker = new Faker();
     private static final ArrayList<User> users = new ArrayList<>();
 
-    private static final String username = faker.name().username();
-
     public static void main(String[] args) {
 
-        String input = "";
-        int index;
 
         randomUsers();
 
@@ -41,10 +37,11 @@ public class Main {
                     case 1:
                         System.out.println("Username:\n");
                         String username = new Scanner(System.in).nextLine();
-                        if (verifyUser(username) == true){
-                            login();
+                        if (verifyUser(username)) {
+                            login(username);
+                        } else {
+                            log.info("Login failed");
                         }
-
                         break;
 
                     case 2:
@@ -67,8 +64,28 @@ public class Main {
 
     }
 
-    private static void login() {
+    private static void login(String username) {
+        User loginUser = users.stream().filter(u -> u.getUsername().equals(username)).findAny().orElse(null);
+        log.info("Login successful\n" + "Welcome, " + username);
 
+        int followersCount = loginUser.getFollowers().size();
+        int postCount = loginUser.getPublications().size();
+        System.out.println("-----------------------------------" + username.toUpperCase() + "[:)]" + "---------------------------------------------------\n");
+        System.out.println("Seguidores: " + followersCount + "\t" + "Publicacións: " + postCount);
+
+        showActions();
+    }
+
+    private static void showActions() {
+        System.out.println("///////////////////////////////////"
+                + "\n1: Show followers"
+                + "\n2: See posts"
+                + "\n3: Publish post   "
+                + "\n4: See Comments         "
+                + "\n5: Search user          "
+                + "\n6: Profile     "
+                + "\n[logout]            "
+                + "\n//////////////////////////////////");
     }
 
     private static void addUser() {
