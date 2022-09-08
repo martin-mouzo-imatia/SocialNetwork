@@ -3,6 +3,7 @@ import lombok.extern.java.Log;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.function.Predicate;
 
 @Log
 public class Main {
@@ -224,6 +225,27 @@ public class Main {
             loginUser.getFollowers().forEach(System.out::println);
         }
         log.info("You have no followers");
+
+        System.out.println("---------------------------------\n");
+        System.out.println("Actions: \n " +
+                "1.) Eliminar.\n2.) Ver perfil.");
+        int choice = sc.nextInt();
+        switch (choice) {
+            case 1:
+                System.out.println("Selecciona el username que quiere eliminar: \n");
+                String deleteUsername = new Scanner(System.in).nextLine();
+
+                //Non se probou
+                Predicate<User> predicate = user -> user.getUsername().equals(deleteUsername);
+                users.removeIf(predicate);
+                break;
+            case 2:
+
+                break;
+            default:
+                log.info(choice + " not a valid menu option! Please select another.");
+        }
+
     }
 
     /**
@@ -258,8 +280,8 @@ public class Main {
      */
     private static void randomUsers() {
         for (int i = 0; i < 11; ++i) {
-            String ramdomName = faker.name().username();
-            users.add(new User(ramdomName, Collections.emptyList(), Collections.emptyList()));
+            String randomName = faker.name().username();
+            users.add(new User(randomName, Collections.emptyList(), Collections.emptyList()));
         }
     }
 
