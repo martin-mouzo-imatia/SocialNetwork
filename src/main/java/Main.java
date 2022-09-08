@@ -2,10 +2,7 @@ import com.github.javafaker.Faker;
 import lombok.extern.java.Log;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Scanner;
+import java.util.*;
 
 @Log
 public class Main {
@@ -31,7 +28,7 @@ public class Main {
                 System.out.println("*** Log in ***\n");
                 System.out.print("1.) Log in. \n");
                 System.out.print("2.) Create new account.\n");
-                System.out.print("--------------------------\n(3.) Exit\n");
+                System.out.print("-------------------------------\n3.) Exit\n");
 
                 choise = sc.nextInt();
 
@@ -92,7 +89,7 @@ public class Main {
                         + "\n4: See Comments         "
                         + "\n5: Search user          "
                         + "\n6: Profile     "
-                        + "\n[logout]            "
+                        + "\n7: [logout]            "
                         + "\n//////////////////////////////////");
 
                 System.out.println("Opción: \n");
@@ -111,10 +108,13 @@ public class Main {
                         addPost(loginUser);
                         break;
                     case 4:
+                        showCommentsByTitle(loginUser);
                         break;
                     case 5:
+                        searchUserByUsername(users);
                         break;
                     case 6:
+                        log.info("Perfil de usuario: " + loginUser);
                         break;
 
                     default:
@@ -127,6 +127,30 @@ public class Main {
         } while (choice != 7);
 
 
+    }
+
+    private static void searchUserByUsername(List<User> users) {
+        System.out.println("Nombre de usuario que desexa atopar: \n");
+        String username = new Scanner(System.in).nextLine();
+        users.stream().filter(x -> x.getUsername().equals(username)).forEach(
+                x -> {
+                    System.out.println(x);
+                }
+        );
+    }
+
+    private static void showCommentsByTitle(User loginUser) {
+        System.out.println("Post title: \n");
+        String titlePost = new Scanner(System.in).nextLine();
+
+        loginUser.getPublications().stream().filter(x -> x.getTitle().equals(titlePost))
+                .forEach(x -> {
+                    if (!x.getCommentList().isEmpty()) {
+                        x.getCommentList().forEach(System.out::println);
+                    } else {
+                        log.warning("There are no comments yet");
+                    }
+                });
     }
 
     private static void addPost(User loginUser) {
@@ -158,7 +182,7 @@ public class Main {
     private static void addVideoPost(User loginUser, Date currentDate) {
         System.out.println("Title of the publication:\n");
         String videoTitle = new Scanner(System.in).nextLine();
-        System.out.println("Content:\n");
+        System.out.println("Duration:\n");
         int duration = new Scanner(System.in).nextInt();
         System.out.println("Quality:\n");
         String quality = new Scanner(System.in).nextLine();

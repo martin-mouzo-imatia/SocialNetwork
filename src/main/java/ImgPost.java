@@ -5,7 +5,7 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class ImgPost extends Post{
+public class ImgPost extends Post {
 
     private String dimension;
 

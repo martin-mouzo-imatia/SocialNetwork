@@ -5,7 +5,7 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class TextPost extends Post{
+public class TextPost extends Post {
 
     private String content;
 
