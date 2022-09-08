@@ -1,5 +1,6 @@
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -8,7 +9,7 @@ public class Post {
 
     private String title;
     private Date postDate;
-    private List<Comment> commentList;
+    private List<Comment> commentList = new ArrayList<>();
 
     public Post(String title, Date postDate) {
         this.title = title;

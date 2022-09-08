@@ -13,7 +13,7 @@ public class Main {
     private static final Faker faker = new Faker();
     private static final ArrayList<User> users = new ArrayList<>();
 
-    private static final  Scanner sc = new Scanner(System.in);
+    private static final Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
 
@@ -116,6 +116,9 @@ public class Main {
                         break;
                     case 6:
                         break;
+
+                    default:
+                        log.info(choice + " not a valid menu option! Please select another.");
                 }
 
             } catch (Exception e) {
@@ -134,39 +137,86 @@ public class Main {
                 + "\n3: Vídeo   ");
 
         int choice = sc.nextInt();
-       switch (choice){
-           case 1:
-               String title= "Aleatorio";
-               String  dimentions="50*50";
+        Date currentDate = Date.from(Instant.now());
+        switch (choice) {
+            case 1:
+                addImgPost(loginUser, currentDate);
+                break;
+            case 2:
+                addTextPost(loginUser, currentDate);
+                break;
+            case 3:
+                addVideoPost(loginUser, currentDate);
+                break;
 
-              Post post = new ImgPost("", Date.from(Instant.now()), "");
-                //add a lista
-               break;
-           case 2:
-
-               break;
-           case 3:
-
-               break;
-       }
-
+            default:
+                log.info(choice + " not a valid menu option! Please select another.");
+        }
 
     }
 
+    private static void addVideoPost(User loginUser, Date currentDate) {
+        System.out.println("Title of the publication:\n");
+        String videoTitle = new Scanner(System.in).nextLine();
+        System.out.println("Content:\n");
+        int duration = new Scanner(System.in).nextInt();
+        System.out.println("Quality:\n");
+        String quality = new Scanner(System.in).nextLine();
+
+        Post videoPost = new VideoPost(videoTitle, currentDate, quality, duration);
+        loginUser.getPublications().add(videoPost);
+        loginUser.getPublications().forEach(System.out::println);
+    }
+
+    private static void addTextPost(User loginUser, Date currentDate) {
+        System.out.println("Title of the publication:\n");
+        String textTitle = new Scanner(System.in).nextLine();
+        System.out.println("Content:\n");
+        String content = new Scanner(System.in).nextLine();
+
+        Post textPost = new TextPost(textTitle, currentDate, content);
+        loginUser.getPublications().add(textPost);
+        loginUser.getPublications().forEach(System.out::println);
+    }
+
+    private static void addImgPost(User loginUser, Date currentDate) {
+        System.out.println("Image name:\n");
+        String imgTitle = new Scanner(System.in).nextLine();
+        System.out.println("Dimensions:\n");
+        String dimensions = new Scanner(System.in).nextLine();
+
+        Post post = new ImgPost(imgTitle, currentDate, dimensions);
+        loginUser.getPublications().add(post);
+        loginUser.getPublications().forEach(System.out::println);
+    }
+
+    /**
+     * Ensina todos os seguidores do usuario.
+     *
+     * @param loginUser usuario logueado
+     */
     private static void showFollowers(User loginUser) {
         if (!loginUser.getFollowers().isEmpty()) {
-            loginUser.getFollowers().stream().forEach(System.out::println);
+            loginUser.getFollowers().forEach(System.out::println);
         }
         log.info("You have no followers");
     }
 
+    /**
+     * Ensina todos os post do usuario
+     *
+     * @param loginUser username do usuario logueado
+     */
     private static void showPost(User loginUser) {
         if (!loginUser.getPublications().isEmpty()) {
-            loginUser.getPublications().stream().forEach(System.out::println);
+            loginUser.getPublications().forEach(System.out::println);
         }
         log.info("You haven't posted anything yet");
     }
 
+    /**
+     * Verifica si se pode engadir un novo usuario e engadeo.
+     */
     private static void addUser() {
         String username = new Scanner(System.in).nextLine();
         User user = new User(username, Collections.emptyList(), Collections.emptyList());
@@ -179,6 +229,9 @@ public class Main {
         }
     }
 
+    /**
+     * Crea 10 usuarios aleatorios.
+     */
     private static void randomUsers() {
         for (int i = 0; i < 11; ++i) {
             String ramdomName = faker.name().username();
@@ -186,6 +239,12 @@ public class Main {
         }
     }
 
+    /**
+     * Determina se o username xa existe dentro do array de users
+     *
+     * @param username nome do usuario
+     * @return true se existe, false se non existe
+     */
     private static boolean verifyUser(String username) {
         return users.stream().anyMatch(user -> user.getUsername().equals(username));
     }
