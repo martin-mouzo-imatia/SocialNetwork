@@ -3,7 +3,6 @@ import lombok.extern.java.Log;
 
 import java.time.Instant;
 import java.util.*;
-import java.util.function.Predicate;
 
 @Log
 public class Main {
@@ -19,9 +18,7 @@ public class Main {
         randomUsers();
 
 
-        users.forEach(System.out::println);
-
-        int choise = 0;
+        int choice = 0;
 
         do {
             try {
@@ -31,9 +28,9 @@ public class Main {
                 System.out.print("2.) Create new account.\n");
                 System.out.print("-------------------------------\n3.) Exit\n");
 
-                choise = sc.nextInt();
+                choice = sc.nextInt();
 
-                switch (choise) {
+                switch (choice) {
 
                     case 1:
                         System.out.println("Username:\n");
@@ -54,13 +51,13 @@ public class Main {
                         System.exit(0);
 
                     default:
-                        log.info(choise + " not a valid menu option! Please select another.");
+                        log.info(choice + " not a valid menu option! Please select another.");
                 }
             } catch (Exception e) {
                 log.warning("The option must be a number");
             }
 
-        } while (choise != 4);
+        } while (choice != 4);
 
 
     }
@@ -69,6 +66,7 @@ public class Main {
         User loginUser = users.stream().filter(u -> u.getUsername().equals(username)).findAny().orElse(null);
         log.info("Login successful\n" + "Welcome, " + username);
 
+        assert loginUser != null;
         int followersCount = loginUser.getFollowers().size();
         int postCount = loginUser.getPublications().size();
         System.out.println("-----------------------------------" + username.toUpperCase() + "[:)]" + "---------------------------------------------------\n");
@@ -80,6 +78,11 @@ public class Main {
     private static void showActions(User loginUser) {
 
         int choice = 0;
+        /**
+         * Obxectos de User só para facer probas
+         */
+        loginUser.getFollowers().add(new User("Pedro", Collections.emptyList(), Collections.emptyList()));
+        loginUser.getFollowers().add(new User("Tono", Collections.emptyList(), Collections.emptyList()));
         do {
             try {
 
@@ -98,28 +101,13 @@ public class Main {
 
 
                 switch (choice) {
-
-                    case 1:
-                        showFollowers(loginUser);
-                        break;
-                    case 2:
-                        showPost(loginUser);
-                        break;
-                    case 3:
-                        addPost(loginUser);
-                        break;
-                    case 4:
-                        showCommentsByTitle(loginUser);
-                        break;
-                    case 5:
-                        searchUserByUsername(users);
-                        break;
-                    case 6:
-                        log.info("Perfil de usuario: " + loginUser);
-                        break;
-
-                    default:
-                        log.info(choice + " not a valid menu option! Please select another.");
+                    case 1 -> showFollowers(loginUser);
+                    case 2 -> showPost(loginUser);
+                    case 3 -> addPost(loginUser);
+                    case 4 -> showCommentsByTitle(loginUser);
+                    case 5 -> searchUserByUsername(users);
+                    case 6 -> log.info("Perfil de usuario: " + loginUser);
+                    default -> log.info(choice + " not a valid menu option! Please select another.");
                 }
 
             } catch (Exception e) {
@@ -131,12 +119,10 @@ public class Main {
     }
 
     private static void searchUserByUsername(List<User> users) {
-        System.out.println("Nombre de usuario que desexa atopar: \n");
+        System.out.println("Username you want to find: \n");
         String username = new Scanner(System.in).nextLine();
         users.stream().filter(x -> x.getUsername().equals(username)).forEach(
-                x -> {
-                    System.out.println(x);
-                }
+                System.out::println
         );
     }
 
@@ -164,18 +150,10 @@ public class Main {
         int choice = sc.nextInt();
         Date currentDate = Date.from(Instant.now());
         switch (choice) {
-            case 1:
-                addImgPost(loginUser, currentDate);
-                break;
-            case 2:
-                addTextPost(loginUser, currentDate);
-                break;
-            case 3:
-                addVideoPost(loginUser, currentDate);
-                break;
-
-            default:
-                log.info(choice + " not a valid menu option! Please select another.");
+            case 1 -> addImgPost(loginUser, currentDate);
+            case 2 -> addTextPost(loginUser, currentDate);
+            case 3 -> addVideoPost(loginUser, currentDate);
+            default -> log.info(choice + " not a valid menu option! Please select another.");
         }
 
     }
@@ -216,48 +194,75 @@ public class Main {
     }
 
     /**
-     * Ensina todos os seguidores do usuario.
+     * Ensina todos os seguidores do usuario, permite eliminar e ver detalles.
      *
      * @param loginUser usuario logueado
      */
     private static void showFollowers(User loginUser) {
         if (!loginUser.getFollowers().isEmpty()) {
             loginUser.getFollowers().forEach(System.out::println);
+        } else {
+            log.info("You have no followers");
         }
-        log.info("You have no followers");
+
 
         System.out.println("---------------------------------\n");
-        System.out.println("Actions: \n " +
+        System.out.println("Actions: \n" +
                 "1.) Eliminar.\n2.) Ver perfil.");
         int choice = sc.nextInt();
         switch (choice) {
-            case 1:
+            case 1 -> {
                 System.out.println("Selecciona el username que quiere eliminar: \n");
                 String deleteUsername = new Scanner(System.in).nextLine();
-
-                //Non se probou
-                Predicate<User> predicate = user -> user.getUsername().equals(deleteUsername);
-                users.removeIf(predicate);
-                break;
-            case 2:
-
-                break;
-            default:
-                log.info(choice + " not a valid menu option! Please select another.");
+                User deleteUser = loginUser.getFollowers().stream().filter(u -> u.getUsername().equals(deleteUsername)).findAny().orElse(null);
+                loginUser.getFollowers().remove(deleteUser);
+                System.out.println("List of followers:\n");
+                loginUser.getFollowers().forEach(System.out::println);
+            }
+            case 2 -> {
+                System.out.println("Select the user whose information you want to see: \n");
+                String detailedUsername = new Scanner(System.in).nextLine();
+                User infoUser = loginUser.getFollowers().stream().filter(u -> u.getUsername().equals(detailedUsername)).findAny().orElse(null);
+                log.info(infoUser.toString());
+            }
+            default -> log.info(choice + " not a valid menu option! Please select another.");
         }
 
     }
 
     /**
-     * Ensina todos os post do usuario
+     * Ensina todos os post do usuario e permite eliminar e ver a información
      *
      * @param loginUser username do usuario logueado
      */
     private static void showPost(User loginUser) {
         if (!loginUser.getPublications().isEmpty()) {
             loginUser.getPublications().forEach(System.out::println);
+        } else {
+            log.info("You haven't posted anything yet");
         }
-        log.info("You haven't posted anything yet");
+
+        System.out.println("---------------------------------\n");
+        System.out.println("Actions: \n" +
+                "1.) Eliminar.\n2.) Ver post.");
+        int choice = sc.nextInt();
+        switch (choice) {
+            case 1 -> {
+                System.out.println("Select the post you want to delete: \n");
+                String titlePostDelete = new Scanner(System.in).nextLine();
+                Post deletePost = loginUser.getPublications().stream().filter(u -> u.getTitle().equals(titlePostDelete)).findAny().orElse(null);
+                loginUser.getPublications().remove(deletePost);
+                System.out.println("List of followers:\n");
+                loginUser.getPublications().forEach(System.out::println);
+            }
+            case 2 -> {
+                System.out.println("Select the post whose information you want to see: \n");
+                String detailedPost = new Scanner(System.in).nextLine();
+                Post infoPost = loginUser.getPublications().stream().filter(u -> u.getTitle().equals(detailedPost)).findAny().orElse(null);
+                log.info(infoPost.toString());
+            }
+            default -> log.info(choice + " not a valid menu option! Please select another.");
+        }
     }
 
     /**
@@ -283,6 +288,7 @@ public class Main {
             String randomName = faker.name().username();
             users.add(new User(randomName, Collections.emptyList(), Collections.emptyList()));
         }
+        users.forEach(System.out::println);
     }
 
     /**
